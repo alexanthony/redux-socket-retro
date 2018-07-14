@@ -13,7 +13,9 @@ const BlockContainer = styled.div`
 `
 const BlockHeader = styled.div`
   display: flex;
-  padding: 10px;
+  margin-bottom: 10px;
+  flex-direction: row;
+  align-items: center;
 `
 
 const AddCardButton = styled.button`
@@ -38,9 +40,22 @@ const BlockTitle = styled.input`
   outline: 0;
   border: none;
   background: rgba(0, 0, 0, 0.12);
+  color: rgba(0, 0, 0, 0.7);
   border-radius: 5px;
   font-size: 1.3em;
-  width: 100%;
+  min-width: 0;
+`
+const BlockDeleteButton = styled.button`
+  z-index: 10;
+  cursor: pointer;
+  margin: 5px;
+  background: none;
+  outline: none;
+  border: none;
+  border-radius: 5px;
+  &:hover {
+    background: rgba(0, 0, 0, 0.12);
+  }
 `
 
 class Block extends React.Component {
@@ -52,6 +67,10 @@ class Block extends React.Component {
     this.props.addCard(this.props.blockId)
   }
 
+  deleteBlock = () => {
+    this.props.deleteBlock(this.props.blockId, this.props.block.cards)
+  }
+
   render() {
     const { block } = this.props
     return (
@@ -61,6 +80,7 @@ class Block extends React.Component {
             value={block.description}
             onChange={this.updateDescription}
           />
+          <BlockDeleteButton onClick={this.deleteBlock}>X</BlockDeleteButton>
         </BlockHeader>
         {block.cards.map(cardId => <Card key={cardId} cardId={cardId} />)}
         <AddCardButton onClick={this.addCard}>Add card...</AddCardButton>
@@ -75,6 +95,7 @@ export default connect(
   }),
   {
     updateBlockDescription: actions.updateBlockDescription,
-    addCard: cardActions.addCard
+    addCard: cardActions.addCard,
+    deleteBlock: cardActions.deleteBlock
   }
 )(Block)

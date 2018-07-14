@@ -34,6 +34,19 @@ const addCardBehaviour = (state, action) => {
   state[action.blockId].cards.push(action.cardId)
 }
 
+const deleteCardBehaviour = (state, action) => {
+  Object.keys(state).forEach(
+    blockId =>
+      (state[blockId].cards = state[blockId].cards.filter(
+        cardId => cardId !== action.cardId
+      ))
+  )
+}
+
+const deleteBlockBehaviour = (state, action) => {
+  delete state[action.blockId]
+}
+
 const behaviours = {
   [actions.ADD_BLOCK]: addBlockBehaviour,
   [actions.ADD_BLOCK_RECEIVE]: addBlockBehaviour,
@@ -43,7 +56,11 @@ const behaviours = {
   [cardActions.ADD_CARD_RECEIVE]: addCardBehaviour,
   [globalActions.INITIAL_STATE]: (state, action) => action.state.blocks,
   [globalActions.CLEAR_ALL]: (state, action) => initialState,
-  [globalActions.CLEAR_ALL_RECEIVE]: () => initialState
+  [globalActions.CLEAR_ALL_RECEIVE]: () => initialState,
+  [cardActions.DELETE_CARD]: deleteCardBehaviour,
+  [cardActions.DELETE_CARD_RECEIVE]: deleteCardBehaviour,
+  [cardActions.DELETE_BLOCK]: deleteBlockBehaviour,
+  [cardActions.DELETE_BLOCK_RECEIVE]: deleteBlockBehaviour
 }
 
 export const reducer = createReducer(behaviours, initialState)

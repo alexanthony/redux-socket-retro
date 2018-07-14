@@ -4,16 +4,15 @@ import styled from 'styled-components'
 import Textarea from 'react-textarea-autosize'
 import actions, { selectors } from './duck'
 
-const CardContainer = styled.div`
-  padding: 10px;
-`
 const CardWrapper = styled.div`
+  position: relative;
   width: 100%;
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
   background: #fff;
   border-radius: 5px;
   min-height: 30px;
   transition: 0.15s;
+  margin-bottom: 10px;
   &:hover {
     background: #f7f7f7;
   }
@@ -28,20 +27,34 @@ const CardText = styled(Textarea)`
   background: none;
   font-family: inherit;
   font-size: inherit;
+  outline: none;
+  &:focus {
+    outline: none;
+  }
+`
+
+const CardDeleteButton = styled.span`
+  position: absolute;
+  right: 4px;
+  top: 0;
+  z-index: 10;
+  cursor: pointer;
 `
 
 class Card extends React.Component {
   updateText = event => {
     this.props.updateText(this.props.cardId, event.target.value)
   }
+  deleteCard = () => {
+    this.props.deleteCard(this.props.cardId)
+  }
   render() {
     const { card } = this.props
     return (
-      <CardContainer>
-        <CardWrapper>
-          <CardText value={card.text} onChange={this.updateText} />
-        </CardWrapper>
-      </CardContainer>
+      <CardWrapper>
+        <CardDeleteButton onClick={this.deleteCard}>x</CardDeleteButton>
+        <CardText value={card.text} onChange={this.updateText} />
+      </CardWrapper>
     )
   }
 }
@@ -50,5 +63,8 @@ export default connect(
   (state, ownProps) => ({
     card: selectors.getCard(state, ownProps.cardId)
   }),
-  { updateText: actions.updateCardText }
+  {
+    updateText: actions.updateCardText,
+    deleteCard: actions.deleteCard
+  }
 )(Card)
