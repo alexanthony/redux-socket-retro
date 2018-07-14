@@ -1,9 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
-import styled from 'styled-components'
-import Textarea from 'react-textarea-autosize'
-import actions, { selectors } from './duck'
+import styled, { css } from 'styled-components'
 import { Draggable } from 'react-beautiful-dnd'
+import actions from './duck'
+import CardTextInput from './CardTextInput'
+
+const draggingStyle = css`
+  background-color: rgba(50, 171, 240, 0.8);
+`
 
 const CardWrapper = styled.div`
   position: relative;
@@ -18,21 +22,7 @@ const CardWrapper = styled.div`
   &:hover {
     background: #f7f7f7;
   }
-`
-
-const CardText = styled(Textarea)`
-  resize: none;
-  border: none;
-  width: 90%;
-  border-radius: 5px;
-  margin: 5px;
-  background: none;
-  font-family: inherit;
-  font-size: inherit;
-  outline: none;
-  &:focus {
-    outline: none;
-  }
+  ${props => props.isDragging && draggingStyle};
 `
 
 const CardDeleteButton = styled.span`
@@ -43,15 +33,11 @@ const CardDeleteButton = styled.span`
   cursor: pointer;
 `
 
-class Card extends React.Component {
-  updateText = event => {
-    this.props.updateText(this.props.cardId, event.target.value)
-  }
+class Card extends React.PureComponent {
   deleteCard = () => {
     this.props.deleteCard(this.props.cardId)
   }
   render() {
-    const { card } = this.props
     return (
       <Draggable draggableId={this.props.cardId} index={this.props.index}>
         {(provided, snapshot) => (
@@ -59,13 +45,10 @@ class Card extends React.Component {
             innerRef={provided.innerRef}
             {...provided.draggableProps}
             {...provided.dragHandleProps}
+            isDragging={snapshot.isDragging}
           >
             <CardDeleteButton onClick={this.deleteCard}>x</CardDeleteButton>
-            <CardText
-              value={card.text}
-              placeholder="New card"
-              onChange={this.updateText}
-            />
+            <CardTextInput cardId={this.props.cardId} />
           </CardWrapper>
         )}
       </Draggable>
@@ -73,12 +56,7 @@ class Card extends React.Component {
   }
 }
 
-export default connect(
-  (state, ownProps) => ({
-    card: selectors.getCard(state, ownProps.cardId)
-  }),
-  {
-    updateText: actions.updateCardText,
-    deleteCard: actions.deleteCard
-  }
-)(Card)
+export default connect(null, {
+  updateText: actions.updateCardText,
+  deleteCard: actions.deleteCard
+})(Card)

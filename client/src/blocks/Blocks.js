@@ -1,23 +1,21 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
+import { DragDropContext, Droppable } from 'react-beautiful-dnd'
 import Block from './Block'
 import NewBlockPlaceholder from './NewBlockPlaceholder'
 import actions, { selectors } from './duck'
-import { DragDropContext, Droppable } from 'react-beautiful-dnd'
+import createInnerList from '../atoms/InnerList'
 
 const BlocksWrapper = styled.div`
   display: flex;
   justify-content: flex-start;
-  align-items: stretch;
+  align-items: flex-start;
   flex: 1 0 auto;
 `
-// const BlockItemContainer = styled.div`
-//   width: 270px;
-//   margin: 5px 10px;
-// `
+const InnerList = createInnerList(Block, 'blockIds', 'blockId')
 
-class Blocks extends React.Component {
+class Blocks extends React.PureComponent {
   handleDragEnd = result => {
     // dropped nowhere
     if (!result.destination) {
@@ -55,9 +53,8 @@ class Blocks extends React.Component {
               innerRef={provided.innerRef}
               {...provided.droppableProps}
             >
-              {blockIds.map((blockId, index) => (
-                <Block blockId={blockId} index={index} key={blockId} />
-              ))}
+              <InnerList blockIds={blockIds} />
+              {provided.placeholder}
               <NewBlockPlaceholder />
             </BlocksWrapper>
           )}

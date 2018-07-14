@@ -1,17 +1,17 @@
 import React from 'react'
-// import { connect } from 'react-redux'
+import { connect } from 'react-redux'
 import styled from 'styled-components'
-// import actions, { selectors } from './duck'
-// import InlineEdit from '../atoms/InlineEdit'
-import Card from './Card'
-// import cardActions from './duck'
 import { Droppable } from 'react-beautiful-dnd'
+import Card from './Card'
+import createInnerList from '../atoms/InnerList'
+import { selectors } from '../blocks/duck'
 
 const CardsWrapper = styled.div`
   background-color: #e2e4e6;
   padding: 10px 5px 10px 5px;
   min-height: 20px;
 `
+const InnerList = createInnerList(Card, 'cardIds', 'cardId')
 
 class Cards extends React.Component {
   render() {
@@ -23,9 +23,7 @@ class Cards extends React.Component {
             {...provided.droppableProps}
             innerRef={provided.innerRef}
           >
-            {cardIds.map((cardId, index) => (
-              <Card key={cardId} index={index} cardId={cardId} />
-            ))}
+            <InnerList cardIds={cardIds} />
             {provided.placeholder}
           </CardsWrapper>
         )}
@@ -34,4 +32,8 @@ class Cards extends React.Component {
   }
 }
 
-export default Cards
+const mapStateToProps = (state, ownProps) => ({
+  cardIds: selectors.getBlock(state, ownProps.blockId).cards
+})
+
+export default connect(mapStateToProps)(Cards)

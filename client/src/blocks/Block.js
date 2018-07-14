@@ -1,10 +1,11 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
-import actions, { selectors } from './duck'
-import cardActions from '../cards/duck'
 import { Draggable } from 'react-beautiful-dnd'
+import cardActions from '../cards/duck'
 import Cards from '../cards/Cards'
+import BlockTitle from './BlockTitle'
+import BlockDeleteButton from './BlockDeleteButton'
 
 const BlockContainer = styled.div`
   border-radius: 5px;
@@ -45,46 +46,17 @@ const AddCardButton = styled.button`
   &:focus {
     outline: 0;
   }
-`
-
-const BlockTitle = styled.input`
-  padding: 5px;
-  outline: 0;
-  border: none;
-  background: rgba(0, 0, 0, 0.12);
-  color: rgba(0, 0, 0, 0.7);
-  border-radius: 5px;
-  font-size: 1.3em;
-  min-width: 0;
-`
-const BlockDeleteButton = styled.button`
-  z-index: 10;
-  cursor: pointer;
-  margin: 5px;
-  background: none;
-  outline: none;
-  border: none;
-  border-radius: 5px;
-  &:hover {
-    background: rgba(0, 0, 0, 0.12);
+  &::-moz-focus-inner {
+    border: 0;
   }
 `
 
-class Block extends React.Component {
-  updateDescription = event => {
-    this.props.updateBlockDescription(this.props.blockId, event.target.value)
-  }
-
+class Block extends React.PureComponent {
   addCard = () => {
     this.props.addCard(this.props.blockId)
   }
 
-  deleteBlock = () => {
-    this.props.deleteBlock(this.props.blockId, this.props.block.cards)
-  }
-
   render() {
-    const { block } = this.props
     return (
       <Draggable draggableId={this.props.blockId} index={this.props.index}>
         {(provided, snapshot) => (
@@ -94,16 +66,10 @@ class Block extends React.Component {
             {...provided.dragHandleProps}
           >
             <BlockHeader>
-              <BlockTitle
-                value={block.description}
-                onChange={this.updateDescription}
-                placeholder="New block"
-              />
-              <BlockDeleteButton onClick={this.deleteBlock}>
-                X
-              </BlockDeleteButton>
+              <BlockTitle blockId={this.props.blockId} />
+              <BlockDeleteButton blockId={this.props.blockId} />
             </BlockHeader>
-            <Cards cardIds={block.cards} blockId={this.props.blockId} />
+            <Cards blockId={this.props.blockId} />
             <BlockFooter>
               <AddCardButton onClick={this.addCard}>Add card...</AddCardButton>
             </BlockFooter>
@@ -114,13 +80,6 @@ class Block extends React.Component {
   }
 }
 
-export default connect(
-  (state, ownProps) => ({
-    block: selectors.getBlock(state, ownProps.blockId)
-  }),
-  {
-    updateBlockDescription: actions.updateBlockDescription,
-    addCard: cardActions.addCard,
-    deleteBlock: cardActions.deleteBlock
-  }
-)(Block)
+export default connect(null, {
+  addCard: cardActions.addCard
+})(Block)
