@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import styled from 'styled-components'
 import Textarea from 'react-textarea-autosize'
 import actions, { selectors } from './duck'
+import { Draggable } from 'react-beautiful-dnd'
 
 const CardWrapper = styled.div`
   position: relative;
@@ -13,6 +14,7 @@ const CardWrapper = styled.div`
   min-height: 30px;
   transition: 0.15s;
   margin-bottom: 10px;
+  padding: 10px 0 10px 0;
   &:hover {
     background: #f7f7f7;
   }
@@ -51,10 +53,22 @@ class Card extends React.Component {
   render() {
     const { card } = this.props
     return (
-      <CardWrapper>
-        <CardDeleteButton onClick={this.deleteCard}>x</CardDeleteButton>
-        <CardText value={card.text} onChange={this.updateText} />
-      </CardWrapper>
+      <Draggable draggableId={this.props.cardId} index={this.props.index}>
+        {(provided, snapshot) => (
+          <CardWrapper
+            innerRef={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+          >
+            <CardDeleteButton onClick={this.deleteCard}>x</CardDeleteButton>
+            <CardText
+              value={card.text}
+              placeholder="New card"
+              onChange={this.updateText}
+            />
+          </CardWrapper>
+        )}
+      </Draggable>
     )
   }
 }

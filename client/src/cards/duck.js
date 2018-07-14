@@ -40,7 +40,7 @@ export default actionCreators
 const initialState = {}
 
 const newCardBehaviour = (state, action) => {
-  state[action.cardId] = { text: 'New card' }
+  state[action.cardId] = { text: '' }
 }
 
 const updateTextBehaviour = (state, action) => {

@@ -19,8 +19,6 @@ const BlocksWrapper = styled.div`
 
 class Blocks extends React.Component {
   handleDragEnd = result => {
-    console.log('onDragEnd')
-    console.log(result)
     // dropped nowhere
     if (!result.destination) {
       return
@@ -36,19 +34,22 @@ class Blocks extends React.Component {
     ) {
       return
     }
-    if (result.type === 'COLUMN') {
+    if (result.type === 'BLOCK') {
       this.props.reorderBlock(
         result.draggableId,
         source.index,
         destination.index
       )
     }
+    if (result.type === 'CARD') {
+      this.props.reorderCard(result.draggableId, source, destination)
+    }
   }
   render() {
     const { blockIds } = this.props
     return (
       <DragDropContext onDragEnd={this.handleDragEnd}>
-        <Droppable droppableId="board" type="COLUMN" direction="horizontal">
+        <Droppable droppableId="board" type="BLOCK" direction="horizontal">
           {provided => (
             <BlocksWrapper
               innerRef={provided.innerRef}
@@ -72,7 +73,8 @@ const mapStateToProps = state => ({
   blockIds: selectors.getBlockIds(state)
 })
 const mapDispatchToProps = {
-  reorderBlock: actions.reorderBlock
+  reorderBlock: actions.reorderBlock,
+  reorderCard: actions.reorderCard
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Blocks)

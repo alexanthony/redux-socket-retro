@@ -1,5 +1,4 @@
 import shortid from 'shortid'
-import { createSelector } from 'reselect'
 import createReducer from '../utils/createReducer'
 import { actions as cardActions } from '../cards/duck'
 import globalActions from '../globalActions'
@@ -9,7 +8,9 @@ export const actions = {
   ADD_BLOCK_RECEIVE: 'receive/ADD_BLOCK',
   UPDATE_BLOCK_DESCRIPTION_RECEIVE: 'receive/UPDATE_BLOCK_DESCRIPTION',
   REORDER_BLOCK: 'send/REORDER_BLOCK',
-  REORDER_BLOCK_RECEIVE: 'receive/REORDER_BLOCK'
+  REORDER_BLOCK_RECEIVE: 'receive/REORDER_BLOCK',
+  REORDER_CARD: 'send/REORDER_CARD',
+  REORDER_CARD_RECEIVE: 'receive/REORDER_CARD'
 }
 
 const actionCreators = {
@@ -24,6 +25,11 @@ const actionCreators = {
     blockId,
     sourceIndex,
     targetIndex
+  }),
+  reorderCard: (cardId, source, destination) => ({
+    type: actions.REORDER_CARD,
+    source,
+    destination
   })
 }
 
@@ -34,7 +40,7 @@ const initialState = {
 }
 
 const addBlockBehaviour = (state, action) => {
-  state.blocksById[action.id] = { description: 'New block', cards: [] }
+  state.blocksById[action.id] = { description: '', cards: [] }
   state.blockIds.push(action.id)
 }
 
@@ -47,9 +53,9 @@ const addCardBehaviour = (state, action) => {
 }
 
 const deleteCardBehaviour = (state, action) => {
-  Object.keys(state).forEach(
+  state.blockIds.forEach(
     blockId =>
-      (state.blocksById[blockId].cards = state[blockId].cards.filter(
+      (state.blocksById[blockId].cards = state.blocksById[blockId].cards.filter(
         cardId => cardId !== action.cardId
       ))
   )
@@ -67,6 +73,18 @@ const reorderBlockBehaviour = (state, action) => {
   state.blockIds.splice(action.targetIndex, 0, movedItem)
 }
 
+const reorderCardBehaviour = (state, action) => {
+  const [movedItem] = state.blocksById[action.source.droppableId].cards.splice(
+    action.source.index,
+    1
+  )
+  state.blocksById[action.destination.droppableId].cards.splice(
+    action.destination.index,
+    0,
+    movedItem
+  )
+}
+
 const behaviours = {
   [actions.ADD_BLOCK]: addBlockBehaviour,
   [actions.ADD_BLOCK_RECEIVE]: addBlockBehaviour,
@@ -82,12 +100,13 @@ const behaviours = {
   [cardActions.DELETE_BLOCK]: deleteBlockBehaviour,
   [cardActions.DELETE_BLOCK_RECEIVE]: deleteBlockBehaviour,
   [actions.REORDER_BLOCK]: reorderBlockBehaviour,
-  [actions.REORDER_BLOCK_RECEIVE]: reorderBlockBehaviour
+  [actions.REORDER_BLOCK_RECEIVE]: reorderBlockBehaviour,
+  [actions.REORDER_CARD]: reorderCardBehaviour,
+  [actions.REORDER_CARD_RECEIVE]: reorderCardBehaviour
 }
 
 export const reducer = createReducer(behaviours, initialState)
 
-const getBlocksObject = state => state.blocks
 const getBlockIds = state => state.blocks.blockIds
 const getBlock = (state, blockId) => state.blocks.blocksById[blockId]
 // const memoiseByBlock = (state, blockId) => blockId

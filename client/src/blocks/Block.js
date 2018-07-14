@@ -2,10 +2,9 @@ import React from 'react'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
 import actions, { selectors } from './duck'
-// import InlineEdit from '../atoms/InlineEdit'
-import Card from '../cards/Card'
 import cardActions from '../cards/duck'
 import { Draggable } from 'react-beautiful-dnd'
+import Cards from '../cards/Cards'
 
 const BlockContainer = styled.div`
   border-radius: 5px;
@@ -70,10 +69,6 @@ const BlockDeleteButton = styled.button`
     background: rgba(0, 0, 0, 0.12);
   }
 `
-const CardsWrapper = styled.div`
-  background-color: #e2e4e6;
-  padding: 10px 5px 10px 5px;
-`
 
 class Block extends React.Component {
   updateDescription = event => {
@@ -102,14 +97,13 @@ class Block extends React.Component {
               <BlockTitle
                 value={block.description}
                 onChange={this.updateDescription}
+                placeholder="New block"
               />
               <BlockDeleteButton onClick={this.deleteBlock}>
                 X
               </BlockDeleteButton>
             </BlockHeader>
-            <CardsWrapper>
-              {block.cards.map(cardId => <Card key={cardId} cardId={cardId} />)}
-            </CardsWrapper>
+            <Cards cardIds={block.cards} blockId={this.props.blockId} />
             <BlockFooter>
               <AddCardButton onClick={this.addCard}>Add card...</AddCardButton>
             </BlockFooter>
