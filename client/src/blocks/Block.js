@@ -5,19 +5,31 @@ import actions, { selectors } from './duck'
 // import InlineEdit from '../atoms/InlineEdit'
 import Card from '../cards/Card'
 import cardActions from '../cards/duck'
+import { Draggable } from 'react-beautiful-dnd'
 
 const BlockContainer = styled.div`
   border-radius: 5px;
-  background-color: #e2e4e6;
-  padding: 10px;
+  width: 270px;
+  margin: 5px;
 `
 const BlockHeader = styled.div`
   display: flex;
-  margin-bottom: 10px;
+  background-color: #e2e4e6;
+  padding-bottom: 10px;
   flex-direction: row;
   align-items: center;
+  padding: 5px 5px 0 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 `
 
+const BlockFooter = styled.div`
+  background-color: #e2e4e6;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  padding: 0 5px 5px 5px;
+  margin-top: -10px;
+`
 const AddCardButton = styled.button`
   background: none;
   transition: 0.15s;
@@ -27,6 +39,7 @@ const AddCardButton = styled.button`
   padding: 0;
   border-radius: 5px;
   outline: 0;
+  cursor: pointer;
   &:hover {
     background-color: rgba(0, 0, 0, 0.12);
   }
@@ -57,6 +70,10 @@ const BlockDeleteButton = styled.button`
     background: rgba(0, 0, 0, 0.12);
   }
 `
+const CardsWrapper = styled.div`
+  background-color: #e2e4e6;
+  padding: 10px 5px 10px 5px;
+`
 
 class Block extends React.Component {
   updateDescription = event => {
@@ -74,17 +91,31 @@ class Block extends React.Component {
   render() {
     const { block } = this.props
     return (
-      <BlockContainer>
-        <BlockHeader>
-          <BlockTitle
-            value={block.description}
-            onChange={this.updateDescription}
-          />
-          <BlockDeleteButton onClick={this.deleteBlock}>X</BlockDeleteButton>
-        </BlockHeader>
-        {block.cards.map(cardId => <Card key={cardId} cardId={cardId} />)}
-        <AddCardButton onClick={this.addCard}>Add card...</AddCardButton>
-      </BlockContainer>
+      <Draggable draggableId={this.props.blockId} index={this.props.index}>
+        {(provided, snapshot) => (
+          <BlockContainer
+            innerRef={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+          >
+            <BlockHeader>
+              <BlockTitle
+                value={block.description}
+                onChange={this.updateDescription}
+              />
+              <BlockDeleteButton onClick={this.deleteBlock}>
+                X
+              </BlockDeleteButton>
+            </BlockHeader>
+            <CardsWrapper>
+              {block.cards.map(cardId => <Card key={cardId} cardId={cardId} />)}
+            </CardsWrapper>
+            <BlockFooter>
+              <AddCardButton onClick={this.addCard}>Add card...</AddCardButton>
+            </BlockFooter>
+          </BlockContainer>
+        )}
+      </Draggable>
     )
   }
 }
