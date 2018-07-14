@@ -41,9 +41,7 @@ io.on('connection', socket => {
   console.log('connected')
   socket.emit('action', { type: 'INITIAL_STATE', state })
   socket.on('action', action => {
-    console.log(action)
     state = reducer(state, action)
-    console.log(state)
     socket.broadcast.emit(
       'action',
       Object.assign({}, action, {
