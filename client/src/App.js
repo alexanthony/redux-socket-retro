@@ -1,36 +1,31 @@
 import React, { Component } from 'react'
-import styled, { keyframes } from 'styled-components'
+import styled from 'styled-components'
 import { Provider } from 'react-redux'
-import logo from './logo.svg'
 import configureStore from './configureStore'
+import Blocks from './blocks/Blocks'
 
 const store = configureStore()
 
 const AppContainer = styled.div`
   text-align: center;
+  background-color: #0079bf;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 `
 
 const Header = styled.header`
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
-`
-const logoSpin = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-`
-const Logo = styled.img`
-  animation: ${logoSpin} infinite 20s linear;
-  height: 80px;
+  background-color: rgba(0, 0, 0, 0.12);
+  height: 40px;
+  color: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `
 
 const Title = styled.h1`
-  font-size: 1.5em;
-`
-
-const Intro = styled.p`
-  font-size: large;
+  font-size: 1.3em;
 `
 
 class App extends Component {
@@ -39,12 +34,9 @@ class App extends Component {
       <Provider store={store}>
         <AppContainer>
           <Header>
-            <Logo src={logo} className="App-logo" alt="logo" />
-            <Title className="App-title">Welcome to React</Title>
+            <Title className="App-title">Let's Retro</Title>
           </Header>
-          <Intro className="App-intro">
-            To get started, edit <code>src/App.js</code> and save to reload.
-          </Intro>
+          <Blocks />
         </AppContainer>
       </Provider>
     )
