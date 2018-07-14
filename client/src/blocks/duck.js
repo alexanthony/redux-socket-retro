@@ -41,7 +41,9 @@ const behaviours = {
   [actions.UPDATE_BLOCK_DESCRIPTION_RECEIVE]: updateDescriptionBehaviour,
   [cardActions.ADD_CARD]: addCardBehaviour,
   [cardActions.ADD_CARD_RECEIVE]: addCardBehaviour,
-  [globalActions.INITIAL_STATE]: (state, action) => action.state.blocks
+  [globalActions.INITIAL_STATE]: (state, action) => action.state.blocks,
+  [globalActions.CLEAR_ALL]: (state, action) => initialState,
+  [globalActions.CLEAR_ALL_RECEIVE]: () => initialState
 }
 
 export const reducer = createReducer(behaviours, initialState)
